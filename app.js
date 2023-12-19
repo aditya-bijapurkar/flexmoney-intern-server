@@ -8,9 +8,6 @@ app.use(express.json());
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 
-const serverless = require("serverless-http");
-const router = express.Router();
-
 const mongoose = require("mongoose");
 mongoose
   .connect(
