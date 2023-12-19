@@ -18,6 +18,10 @@ mongoose
 
 const Member = require("./models/memberModel");
 
+app.get("/", (req, res) => {
+  res.send({ hello: "world" });
+});
+
 app.post("/register", async (req, res) => {
   const data = req.body;
   const checkUser = await Member.findOne({ email: data.email });
