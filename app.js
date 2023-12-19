@@ -9,12 +9,18 @@ app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 
 const mongoose = require("mongoose");
-mongoose
-  .connect(
-    `mongodb+srv://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@cluster0.ydjkbkb.mongodb.net/?retryWrites=true&w=majority`
-  )
-  .then(() => console.log("MongoDB connected"))
-  .catch((err) => console.log(err));
+mongoose.set("strictQuery", false);
+const connectDB = async () => {
+  try {
+    const conn = await mongoose.connect(
+      `mongodb+srv://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@cluster0.ydjkbkb.mongodb.net/?retryWrites=true&w=majority`
+    );
+    console.log(`MongoDB Connected: ${conn.connection.host}`);
+  } catch (error) {
+    console.log(error);
+    process.exit(1);
+  }
+};
 
 const Member = require("./models/memberModel");
 
@@ -65,7 +71,10 @@ const updateBatches = schedule.scheduleJob("0 0 0 1 */1 *", async () => {
   await Member.updateMany({ email: { $ne: null } }, { date: new Date() });
 });
 
-app.set("port", process.env.PORT || 3000);
-var server = app.listen(app.get("port"), function () {
-  console.log("Express server listening on port " + server.address().port);
+const PORT = process.env.port || 3000;
+
+connectDB().then(() => {
+  app.listen(PORT, () => {
+    console.log(`Listening on port ${PORT}`);
+  });
 });
